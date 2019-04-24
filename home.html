@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!<html lang="zh-tw">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>Highcharts</title>
+		<!-- jQuery js -->	
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+		
+		<!--include the highcharts library-->
+		<script src="http://code.highcharts.com/highcharts.js"></script>
+
+		<!-- Bootstrap css and js -->
+		<link  rel= "stylesheet"  href= "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" >
+		<link  rel= "stylesheet"  href= "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" >
+		<script src= "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" ></script>
+
+	<script>
+	function highcharsinit(){
+		$('#container').highcharts({
+			title: {
+				text: '抓取 MySQL 光敏數據 到 Highcharts',
+				x: -20 
+			},
+			subtitle: {
+				text: 'Light Value',
+				x: -20
+			},
+			xAxis: {
+				title: {
+				text: 'Time'
+				},
+				categories: time,
+				labels:{ //隱藏X軸的標籤
+					enabled: false,
+				}
+			},
+			yAxis: {
+				title: {
+				text: 'value',
+				}
+			},
+			//圖表的資料
+			series: [{
+				name: '光敏數據',
+				data: values
+			}]
+		});
+	}
+	$(function () {
+		$.ajax({									  
+			url: 'GetData.php',//連接的URL	  
+			data: "{}",//夾帶的參數
+			dataType: 'json', //資料格式 
+			success: function(data)	//傳送成功的function
+			{	
+				values = [];
+				time = [];
+				
+				//for (var i = 0; i <30; i++)
+				showSize=30;    //顯示30個
+				for (var i = 0; i <showSize; i++)
+				{
+					if(parseInt(data[i]['status'])==0)     //狀態0顯示紅色  
+						values.push({y:parseInt(data[i]['value']), color: '#FF0000' });
+					else               //其他顯示綠色  
+						values.push({y:parseInt(data[i]['value']), color: '#00FF00' });
+					time.push(data[i]['time']);   //顯示時間
+				}
+				highcharsinit();
+			} 
+		});
+
+	   /*$("#trigger").click(function(){
+            $.ajax({
+                url:'callEA.php',
+
+                data: "{}",
+                dataType: 'json', 
+                success:function(data)
+                {
+
+
+                }
+            });
+
+        });*/
+	});
+	</script>
+</head>
+
+<body>
+	<div class="container">
+		<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto">Insert Highchart Here</div></div>
+		<button class="btn btn-warning" onclick="window.location.href='./callEA.php'">Trigger EA</button>
+        <button class="btn btn-info" onclick="window.location.href='./randStatus.php'">Clear Status</button>
+        <button class="btn btn-success" onclick="window.location.href='./generateData.php'">Generate New Data</button>
+        <button class="btn btn-danger" onclick="window.location.href='./deleteData.php'">Delete Data</button>
+
+
+	</div>
+		
+</body>
+</html>
